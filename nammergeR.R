@@ -1,29 +1,38 @@
-combini <- data.frame(total.c$CHR, total.c$A1,total.c$A2, total.c$eur_MAF, total.c$afr_MAF, total.c$eas_MAF, total.c$sas_MAF)
+combini <- data.frame(total.c$CHR, total.c$SNP, total.c$A1,total.c$A2, total.c$eur_MAF, total.c$afr_MAF, total.c$eas_MAF, total.c$sas_MAF)
 
 comb2 <- combini[complete.cases(combini), ]
-
+names(comb2) <- c('CHR', 'SNP', 'A1', 'A2', 'eur_MAF', 'afr_MAF', 'eas_MAF', 'sas_MAF')
 head(comb2)
 
 namdat <- read.table('mixtures/genomic_resources/mixtures_nam_data/nam_afreq.frq', header = TRUE)
 
 sum(is.na(namdat))
 
+head(namdat)
 
+load("~/mixtures/genomic_resources/mixtures_nam_data/1000G_nam_merged_SNP_only.Rdata")
 
+comb4 <- all
 
+names(namdat) <- c('CHRnam', 'SNP', 'A1nam', 'A2nam', 'nam_MAF', 'nam_NCHROBS')
 
-indices <- numeric(length(totdatmerge$A1.x))
+comb3 <- merge(comb2, namdat, by = 'SNP', all.x = TRUE)
+comb4 <- comb3[complete.cases(comb3), ]
 
-for (i in 1:length(totdatmerge$A1.x)){
-  if (totdatmerge$A1.x[i] == 'A' || totdatmerge$A1.x[i] == 'T'){
-    if (totdatmerge$A2.y[i] == 'A' || totdatmerge$A2.y[i] == 'T'){
-      totdatmerge$NAM_MAF_edit[i] = 1 - totdatmerge$NAM_MAF[i]
+comb4$nam_MAF_edit <- comb4$nam_MAF
+
+indices <- numeric(length(comb4$A1))
+
+for (i in 1:length(comb4$A1)){
+  if (comb4$A1[i] == 'A' || comb4$A1[i] == 'T'){
+    if (comb4$A2nam[i] == 'A' || comb4$A2nam[i] == 'T'){
+      comb4$nam_MAF_edit[i] = 1 - comb4$nam_MAF[i]
       indices[i] <- i
     }
   }
-  if (totdatmerge$A1.x[i] == 'C' || totdatmerge$A1.x[i] == 'G'){
-    if (totdatmerge$A2.y[i] == 'C' || totdatmerge$A2.y[i] == 'G'){
-      totdatmerge$NAM_MAF_edit[i] = 1 - totdatmerge$NAM_MAF[i]
+  if (comb4$A1[i] == 'C' || comb4$A1[i] == 'G'){
+    if (comb4$A2nam[i] == 'C' || comb4$A2nam[i] == 'G'){
+      comb4$nam_MAF_edit[i] = 1 - comb4$nam_MAF[i]
       indices[i] <- i
     }
   }
@@ -31,9 +40,57 @@ for (i in 1:length(totdatmerge$A1.x)){
 
 count = 0
 
-for (i in 1:length(totdatmerge$A1.x)){
-  if (totdatmerge$A1.x[i] == totdatmerge$A2.y[i]){
-    if (totdatmerge$A1.y[i] == totdatmerge$A2.x[i]){
+for (i in 1:length(comb4$A1)){
+  if (comb4$A1[i] == comb4$A2nam[i]){
+    if (comb4$A1nam[i] == comb4$A2[i]){
+      count = count + 1
+    }
+  }
+}combini <- data.frame(total.c$CHR, total.c$SNP, total.c$A1,total.c$A2, total.c$eur_MAF, total.c$afr_MAF, total.c$eas_MAF, total.c$sas_MAF)
+
+comb2 <- combini[complete.cases(combini), ]
+names(comb2) <- c('CHR', 'SNP', 'A1', 'A2', 'eur_MAF', 'afr_MAF', 'eas_MAF', 'sas_MAF')
+head(comb2)
+
+namdat <- read.table('mixtures/genomic_resources/mixtures_nam_data/nam_afreq.frq', header = TRUE)
+
+sum(is.na(namdat))
+
+head(namdat)
+
+load("~/mixtures/genomic_resources/mixtures_nam_data/1000G_nam_merged_SNP_only.Rdata")
+
+comb4 <- all
+
+names(namdat) <- c('CHRnam', 'SNP', 'A1nam', 'A2nam', 'nam_MAF', 'nam_NCHROBS')
+
+comb3 <- merge(comb2, namdat, by = 'SNP', all.x = TRUE)
+comb4 <- comb3[complete.cases(comb3), ]
+
+comb4$nam_MAF_edit <- comb4$nam_MAF
+
+indices <- numeric(length(comb4$A1))
+
+for (i in 1:length(comb4$A1)){
+  if (comb4$A1[i] == 'A' || comb4$A1[i] == 'T'){
+    if (comb4$A2nam[i] == 'A' || comb4$A2nam[i] == 'T'){
+      comb4$nam_MAF_edit[i] = 1 - comb4$nam_MAF[i]
+      indices[i] <- i
+    }
+  }
+  if (comb4$A1[i] == 'C' || comb4$A1[i] == 'G'){
+    if (comb4$A2nam[i] == 'C' || comb4$A2nam[i] == 'G'){
+      comb4$nam_MAF_edit[i] = 1 - comb4$nam_MAF[i]
+      indices[i] <- i
+    }
+  }
+}
+
+count = 0
+
+for (i in 1:length(comb4$A1)){
+  if (comb4$A1[i] == comb4$A2nam[i]){
+    if (comb4$A1nam[i] == comb4$A2[i]){
       count = count + 1
     }
   }
