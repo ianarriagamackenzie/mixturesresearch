@@ -148,6 +148,7 @@ fn.ancmixtures <- function(x){
   return(sum(minfunc))
 }
 
+# incorrect equality function
 # inequality function, each proportion is greater then 0, eg x[i] > 0
 hin.ancmixtures <- function(x){
   inequality <- numeric(pop_number)
