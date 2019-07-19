@@ -36,6 +36,8 @@ for (j in (2:26)){
 
 paste('mdat_', pop_list[4], sep = '')
 
+
+
 mergedf = merge(mergedf, mdat_TSI , by = 'SNP')
 mergedf = merge(mergedf, mdat_GWD , by = 'SNP')
 mergedf = merge(mergedf, mdat_ACB , by = 'SNP')

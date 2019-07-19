@@ -41,6 +41,19 @@ for (n in 1:length(namtest$MAF_nam)){
   }
 }
 
+rind = c(NA)
+
+mergetest1$AFr = as.numeric(as.character(mergetest1$AFr))
+
+for (i in (1:length(mergetest1$SNP))){
+  if (mergetest1$A1[i] == mergetest1$A2r[i] && mergetest1$A2[i] == mergetest1$A1r[i]){
+    mergetest1$AFr[i] = 1 - mergetest1$AFr[i]
+  }
+  if ((mergetest1$A1[i] != mergetest1$A1r[i] && mergetest1$A1[i] != mergetest1$A2r[i]) || (mergetest1$A2[i] != mergetest1$A1r[i] && mergetest1$A2[i] != mergetest1$A2r[i])){
+    rind = append(rind, paste(i))
+  }
+}
+
 write.table(namtest, file = '~/work/namtestAFflip.txt')
 refdat = namtestAFflip
 

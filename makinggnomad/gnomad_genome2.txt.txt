@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd /nfs/storage/math/gross-s2/projects/gnomad-public/vcf/genomes/chr22.filter/
+
+vcftools --gzvcf gnomad.genomes.r2.1.sites.chr22.PASS_remove_indels.vcf.gz --out chr22.african_JUNE2019updated --recode --recode-INFO AF_afr AC_afr AN_afr nhomalt_af
+
+done

@@ -7,7 +7,8 @@ load(file="mixtures/Mixtures.git/total_strict_fine_maf01_atleastone.RData")
 install.packages('nloptr')
 library(nloptr)
 
-snpsamps <- total.c[sample(1:nrow(total.c))[1:100000],]
+master_frame_final <- masterframe1[sample(1:nrow(masterframe1))[1:100000],]
+
 
 
 # total number of populations to include and ratios for given pops
@@ -16,10 +17,23 @@ snpsamps <- total.c[sample(1:nrow(total.c))[1:100000],]
 
 N_total = 10000 # total number of samples (people)
 MAF_thresh <- 0.01 # keep at 0.01
-pop_number = 10 # number of total ancestries in pop, MAKE SURE pop_number >= length(pop_list)
+pop_number = 3 # number of total ancestries in pop, MAKE SURE pop_number >= length(pop_list)
 pop_list = c() # exact column names, complete random -> c()
 pop_fractions = c() # sum =< 1, final number disregarded if exact pop list, complete random -> c()
 
+
+# Generating the population matrix
+
+increment <- (1 / N_total)
+addvals <- numeric(N_total + 1)
+
+for (i in 1:N_total){
+  addvals[i+1] <- increment * i
+}
+
+for (i in 1:pop_number){
+  
+}
 
 # create table with all ancestry names and column locations
 # pulls any columns ending with '_MAF'
@@ -148,7 +162,28 @@ fn.ancmixtures <- function(x){
   return(sum(minfunc))
 }
 
-# incorrect equality function
+# gradient of min function
+gr.ancmixtures <- function(x){
+  gradfunc <- numeric(3)
+  gradfunc <- c( 2 * x[1] * (x[1]*master_frame_final[3] + x[2]*master_frame_final[4] + x[3]*master_frame_final[5]),
+                 2 * x[2] * (x[1]*master_frame_final[3] + x[2]*master_frame_final[4] + x[3]*master_frame_final[5]),
+                 2 * x[3] * (x[1]*master_frame_final[3] + x[2]*master_frame_final[4] + x[3]*master_frame_final[5]))
+  return(as.numeric(gradfunc))
+}
+
+gr.ancmixtures <- function(x){
+  gradfunc <- numeric(pop_number)
+  for (i in 1:pop_number){
+    gradmin = 0
+    for (i in 1:pop_number){
+      gradmin = gradmin + x[i]*master_frame_final[i+2] 
+    }
+    gradfunc[i] <- 2 * x[i] + gradmin
+  }
+  return(gradfunc)
+}
+
+
 # inequality function, each proportion is greater then 0, eg x[i] > 0
 hin.ancmixtures <- function(x){
   inequality <- numeric(pop_number)
@@ -168,7 +203,11 @@ heq.ancmixtures <- function(x){
 # SLSQP function, nloptr library
 
 start_time = Sys.time()
-S <- slsqp(starting, fn = fn.ancmixtures, hin = hin.ancmixtures, heq = heq.ancmixtures)
+S <- slsqp(starting,
+           fn = fn.ancmixtures,
+           hin = hin.ancmixtures,
+           heq = heq.ancmixtures,
+           gr = gr.ancmixtures)
 end_time = Sys.time()
 
-S$par; end_time - start_time
+S$par; end_time - start_time; pop_frame

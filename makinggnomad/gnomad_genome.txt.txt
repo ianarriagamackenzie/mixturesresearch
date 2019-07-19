@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for CHR in `seq 1 22`; do
+
+echo $CHR
+
+cd /nfs/storage/math/gross-s2/projects/gnomad-public/vcf/genomes/chr$CHR.filter/
+
+vcftools --gzvcf gnomad.genomes.r2.1.sites.chr$CHR.PASS_remove_indels.vcf.gz --out chr$CHR.african_JUNE2019updated --get-INFO AF_afr --get-INFO AC_afr --get-INFO AN_afr --get-INFO nhomalt_af --get-INFO ID
+done
