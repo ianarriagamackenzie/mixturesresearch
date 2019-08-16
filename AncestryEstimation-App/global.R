@@ -1,0 +1,26 @@
+library(shinyWidgets)
+library(ggplot2)
+library(reshape2)
+
+# Hendricks Mixtures Research Group - UC Denver
+# Created by Ian Arriaga MacKenzie
+# For use with gnomAD ancestry analysis information
+
+# load genome test data
+genome_tests_afr = read.csv('genome_test_afr.txt', sep='')
+genome_tests_amr = read.csv('genome_test_amr.txt', sep='')
+genome_tests_oth = read.csv('genome_test_oth.txt', sep='')
+
+# load exome test data
+exome_tests_afr = read.csv('exome_test_afr.txt', sep='')
+exome_tests_amr = read.csv('exome_test_amr.txt', sep='')
+exome_tests_oth = read.csv('exome_test_oth.txt', sep='')
+
+# load data from laptop for testing purposes, comment out on published app
+# genome_tests_afr <- read.csv("~/GitHub/mixturesresearch/AncestryEstimation-App/genome_test_afr.txt", sep="")
+# genome_tests_amr <- read.csv("~/GitHub/mixturesresearch/AncestryEstimation-App/genome_test_amr.txt", sep="")
+# genome_tests_oth <- read.csv("~/GitHub/mixturesresearch/AncestryEstimation-App/genome_test_oth.txt", sep="")
+# exome_tests_afr <- read.csv("~/GitHub/mixturesresearch/AncestryEstimation-App/exome_test_afr.txt", sep="")
+# exome_tests_amr <- read.csv("~/GitHub/mixturesresearch/AncestryEstimation-App/exome_test_amr.txt", sep="")
+# exome_tests_oth <- read.csv("~/GitHub/mixturesresearch/AncestryEstimation-App/exome_test_oth.txt", sep="")
+
