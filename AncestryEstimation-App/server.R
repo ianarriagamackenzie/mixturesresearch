@@ -37,16 +37,25 @@ server = function(input, output) {
       indices = which(randdat$Number_SNPs == snpnum)
       
       randcleandat = randdat[(indices[1]):tail(indices, n = 1),4:8]
-      names(randcleandat) = c('European', 'African', 'South Asian', 'East Asian', 'Native American')
+      names(randcleandat) = c('EUR', 'AFR', 'SAS', 'EAS', 'NAM')
       
       randmeltdat <- melt(randcleandat)
       names(randmeltdat) = c('Ancestry', 'Proportion')
       
       randplot = ggplot(randmeltdat, aes(x=Proportion, fill = Ancestry)) +
         geom_histogram(bins = 400)+
-        xlim(c(0,1))+
         facet_grid(Ancestry ~ .)+
-        guides(fill = FALSE)
+        scale_fill_manual(values = colvec)+
+        guides(fill = FALSE)+
+        scale_x_continuous(labels = percent_format(accuracy = 1), 
+                           breaks = c(0,.25,.50,.75,1),
+                           limits = c(0,1)) +
+        theme(axis.text.x = element_text(size=20),
+              axis.title.x = element_text(size=20),
+              axis.text.y = element_blank(),
+              axis.title.y = element_blank(),
+              strip.text.y = element_text(size = 15),
+              axis.ticks = element_blank())
       
       return(randplot)
       
