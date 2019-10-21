@@ -120,16 +120,16 @@ HAplot = ggplot(AFREUR, aes(x=AFREUR$True.afr, y=AFREUR$accuracy.R.afr)) +
   geom_hline(yintercept = 0, size=.2, color="black") +
   theme_minimal() +
   theme(plot.title = element_blank(),
-        axis.text.x = element_text(face="bold", size=20),
-        axis.text.y = element_text(face="bold", size=20),
-        axis.title.x = element_text(face="bold", size=20),
-        axis.title.y = element_text(face="bold", size=15))
+        axis.text.x = element_text(face="bold", size=30),
+        axis.text.y = element_text(face="bold", size=30),
+        axis.title.x = element_text(face="bold", size=30),
+        axis.title.y = element_text(face="bold", size=25))
 print(HAplot +
         labs(title= NA,
              y= "African Estimate - True Proportion",
              x= "True African Mixture Proportion")) +
-  scale_y_continuous(labels = percent_format(accuracy = .01), limits = c(-.001, .001))+
-  scale_x_continuous(labels = percent_format(accuracy = 1))
+  scale_y_continuous(labels = c(-0.001, -0.0005, 0 , 0.0005, 0.001), limits = c(-.001, .001))+
+  scale_x_continuous()
 
 
 

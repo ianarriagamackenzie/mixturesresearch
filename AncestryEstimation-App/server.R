@@ -47,8 +47,7 @@ server = function(input, output) {
         facet_grid(Ancestry ~ .)+
         scale_fill_manual(values = colvec)+
         guides(fill = FALSE)+
-        scale_x_continuous(labels = percent_format(accuracy = 1), 
-                           breaks = c(0,.25,.50,.75,1),
+        scale_x_continuous(breaks = c(0,.25,.50,.75,1),
                            limits = c(0,1)) +
         theme(axis.text.x = element_text(size=20),
               axis.title.x = element_text(size=20),
