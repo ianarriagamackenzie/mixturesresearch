@@ -10,10 +10,17 @@ library(scales)
 library(gridExtra)
 library(dplyr)
 
-colvec = c(brewer.pal(n = 8, name = 'Set2')[2], brewer.pal(n = 8, name = 'Set2')[3], brewer.pal(n = 8, name = 'Set2')[1], brewer.pal(n = 8, name = 'Set2')[5], brewer.pal(n = 8, name = 'Set2')[6])
+colvec = c(brewer.pal(n = 8, name = 'Set2')[3],
+           brewer.pal(n = 8, name = 'Set2')[1],
+           brewer.pal(n = 8, name = 'Set2')[2],
+           brewer.pal(n = 8, name = 'Set2')[6],
+           brewer.pal(n = 8, name = 'Set2')[5])
 
 # load genome/exome test data
-# genome_tests_afr = read.csv('randsnpdat.txt', sep='')
+# randsnpdat = read.csv('randsnpdat.txt', sep='')
+# bbdat = read.csv('bbdat.txt', sep='')
 
 # load data from laptop for testing purposes, comment out on published app
 randsnpdat = read.csv('~/GitHub/mixturesresearch/AncEstV2/randsnpdat.txt', sep='')
+bbdat = read.csv('~/GitHub/mixturesresearch/AncEstV2/bbdat.txt', sep='')
+

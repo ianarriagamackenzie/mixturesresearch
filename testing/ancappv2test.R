@@ -27,78 +27,113 @@ exome_tests_amr$exomegenome = rep('exome', 9022); exome_tests_amr$gnomadancestry
 exome_tests_oth$exomegenome = rep('exome', 9022); exome_tests_oth$gnomadancestry = rep('oth', 9022)
 
 data1 = read.csv("C:/Users/iansa/OneDrive/Desktop/poster/blockboot_afr.csv")
-data1$gnomadanc = rep('afr', 1000)
+data1$gnomadanc = rep('afr', 1000); data1$exge = rep('genome', 1000)
 data2 = read.csv("C:/Users/iansa/OneDrive/Desktop/poster/blockboot_amr.csv"); data2 = data2[,2:9]
-data2$gnomadanc = rep('amr', 1000)
+data2$gnomadanc = rep('amr', 1000); data2$exge = rep('genome', 1000)
 data3 = read.csv("C:/Users/iansa/OneDrive/Desktop/poster/blockboot_oth.csv")
-data3$gnomadanc = rep('oth', 1000)
-bbdat = rbind(data1, data2, data3)
+data3$gnomadanc = rep('oth', 1000); data3$exge = rep('genome', 1000)
+
+dataex1 = read.csv("C:/Users/iansa/OneDrive/Desktop/blockboot_exome_afr.csv")
+dataex1$gnomadanc = rep('afr', 10000); dataex1$exge = rep('exome', 10000)
+dataex2 = read.csv("C:/Users/iansa/OneDrive/Desktop/blockboot_exome_amr.csv")
+dataex2$gnomadanc = rep('amr', 10000); dataex2$exge = rep('exome', 10000)
+dataex3 = read.csv("C:/Users/iansa/OneDrive/Desktop/blockboot_exome_oth.csv")
+dataex3$gnomadanc = rep('oth', 10000); dataex3$exge = rep('exome', 10000)
+
+bbdat = rbind(data1, data2, data3, dataex1, dataex2, dataex3)
+names(bbdat) = c('AFR', 'EUR', 'SAS', 'EAS', 'NAM', 'Iterations', 'Time', 'MinValue', 'Gnomadanc', 'Exge')
+
+write.table(bbdat, file = 'bbdat.txt')
+
+bbdat = read.csv('~/GitHub/mixturesresearch/AncEstV2/bbdat.txt', sep='')
 
 bb = bbdat %>% 
-  filter(gnomadanc == 'amr') %>% 
-  select(european, african, south_asian, east_asian, native_american)
+  filter(Exge == 'genome') %>% 
+  filter(Gnomadanc == 'amr') %>% 
+  select(AFR, EAS, EUR, NAM, SAS)
 bbsum = bb %>% 
   summarise_all(mean)
 bbsum = melt(bbsum)
 
-bbplot = ggplot(bbsum, aes(x = variable, y = value)) +
+bbplot = ggplot(bbsum, aes(x = variable, y = value, label = sprintf("%0.3f", round(value, digits = 3)))) +
   geom_col(fill = colvec) +
   scale_y_continuous(breaks = c(0,.25,.50,.75,1),
-                     limits = c(0,1))
+                     limits = c(0,1)) +
+  geom_text(size = 4,
+            hjust = .5,
+            nudge_y = .05)
   
 plot(bbplot)
 
 
 randsnpdat = rbind(genome_tests_afr, genome_tests_amr, genome_tests_oth, exome_tests_afr, exome_tests_amr, exome_tests_oth)
-
+names(randsnpdat) = c('TestType', 'NumberSNPs', 'TestNum', 'EUR', 'AFR', 'SAS', 'EAS', 'NAM', 'Time', 'Iterations', 'MinValue', 'Exge', 'Gnomadanc')
 write.table(randsnpdat, file = 'randsnpdat.txt')
 
-randsnpdat = read.csv("~/GitHub/mixturesresearch/testing/randsnpdat.txt", sep="")
-colvec = c(brewer.pal(n = 8, name = 'Set2')[2],
-           brewer.pal(n = 8, name = 'Set2')[3],
+randsnpdat = read.csv('~/GitHub/mixturesresearch/AncEstV2/randsnpdat.txt', sep='')
+colvec = c(brewer.pal(n = 8, name = 'Set2')[3],
            brewer.pal(n = 8, name = 'Set2')[1],
-           brewer.pal(n = 8, name = 'Set2')[5],
-           brewer.pal(n = 8, name = 'Set2')[6])
+           brewer.pal(n = 8, name = 'Set2')[2],
+           brewer.pal(n = 8, name = 'Set2')[6],
+           brewer.pal(n = 8, name = 'Set2')[5])
 
 tdat = randsnpdat %>%
-  filter(exomegenome == 'genome') %>% 
-  filter(gnomadancestry == 'amr') %>% 
-  filter(Number_SNPs == 1000) %>% 
-  select(EUR, AFR, SAS, EAS, NAM)
+  filter(Exge == 'genome') %>% 
+  filter(Gnomadanc == 'afr') %>% 
+  filter(Number_SNPs == 100) %>% 
+  select(AFR, EAS, EUR, NAM, SAS, Test_time, Iterations, Minimazation_value)
+
+exgetvec = c('genome', 'exome')
+anctvec = c('afr', 'amr', 'oth')
+
+tdat = randsnpdat %>%
+  filter(Exge == paste(exgetvec[1])) %>% 
+  filter(Gnomadanc == anctvec[2])
+
+t2dat = tdat %>% 
+  slice(23:dim(tdat)[1])
+
+
+tdat = randsnpdat %>%
+  filter(Exge == paste(exgetvec[1])) %>% 
+  filter(Gnomadanc == anctvec[2]) %>% 
+  filter(NumberSNPs == 100) %>% 
+  select(AFR, EAS, EUR, NAM, SAS)
 
 randmeltdat <- melt(tdat)
 names(randmeltdat) = c('Ancestry', 'Proportion')
 
 randplot = ggplot(randmeltdat, aes(x=Proportion, fill = Ancestry)) +
   geom_histogram(bins = 400)+
-  geom_density(fill = NA)+
   facet_grid(Ancestry ~ .)+
   scale_fill_manual(values = colvec)+
   guides(fill = FALSE)+
   scale_x_continuous(breaks = c(0,.25,.50,.75,1),
                      limits = c(-0.01,1)) +
-  theme(axis.text.x = element_text(size=15),
-        axis.title.x = element_text(size=15),
+  theme(axis.text.x = element_text(size=20),
+        axis.title.x = element_text(size=20),
         axis.text.y = element_blank(),
         axis.title.y = element_blank(),
-        strip.text.y = element_text(size = 15),
+        strip.text.y = element_text(size = 18),
         axis.ticks = element_blank())
-
+plot(randplot)
 
 plot_list = list()
-anc_list = c('EUR', 'AFR', 'SAS', 'EAS', 'NAM')
+anc_list = c('AFR', 'EAS', 'EUR', 'NAM', 'SAS')
 
+# mean(tdat[[anc_list[i]]])
+# alpha = (mean(tdat[[anc_list[i]]]))
 
 for (i in 1:5){
   pl = ggplot(data = tdat, aes_string(x = anc_list[[i]])) +
+    geom_histogram(aes(y = ..density..), color = 'black', fill = colvec[i], bins = 30) +
     geom_density(fill = NA) +
-    geom_histogram(aes(y = ..density..), color = 'black', fill = colvec[i], alpha = (mean(tdat[[anc_list[i]]])), bins = 30) +
     geom_vline(data = tdat, xintercept = quantile(tdat[[anc_list[i]]], probs = 0.025), linetype ="longdash", size = .8) +
     geom_vline(data = tdat, xintercept = quantile(tdat[[anc_list[i]]], probs = 0.975), linetype ="longdash", size = .8) +
     theme_minimal() + 
     labs(title = paste(anc_list[i], 'prop est', sep = ' '), x = NULL, y = NULL) +
     scale_x_continuous(labels = percent_format(accuracy = .01), 
-                       breaks = c(quantile(tdat[[anc_list[i]]], probs = 0.025), mean(tdat[[anc_list[i]]]), quantile(tdat[[anc_list[i]]], probs = 0.975))) +
+                       breaks = c(quantile(tdat[[anc_list[i]]], probs = 0.025), quantile(tdat[[anc_list[i]]], probs = 0.975))) +
     theme(plot.title = element_text(hjust = 0.5, size = 15),
           axis.text.x = element_text(face="bold", size=15),
           axis.text.y = element_blank())
