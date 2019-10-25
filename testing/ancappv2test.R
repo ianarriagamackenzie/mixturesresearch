@@ -80,8 +80,8 @@ colvec = c(brewer.pal(n = 8, name = 'Set2')[3],
 tdat = randsnpdat %>%
   filter(Exge == 'genome') %>% 
   filter(Gnomadanc == 'afr') %>% 
-  filter(Number_SNPs == 100) %>% 
-  select(AFR, EAS, EUR, NAM, SAS, Test_time, Iterations, Minimazation_value)
+  filter(NumberSNPs == 100000) %>% 
+  select(AFR, EAS, EUR, NAM, SAS)
 
 exgetvec = c('genome', 'exome')
 anctvec = c('afr', 'amr', 'oth')
@@ -90,8 +90,38 @@ tdat = randsnpdat %>%
   filter(Exge == paste(exgetvec[1])) %>% 
   filter(Gnomadanc == anctvec[2])
 
+tdat = tdat %>%
+  slice(1:22) %>% 
+  select(TestType, AFR, EAS, EUR, NAM, SAS)
+
+names(tdat) = c('Chromosome', 'European', 'African', 'South Asian', 'East Asian', 'Native American')
+
+chrminmax = c(1,22)
+
+tdat = tdat[chrminmax[1]:chrminmax[2],]
+
+chrmelt<- melt(tdat, id="Chromosome", 
+               measure=c('European', 'African', 'South Asian', 'East Asian', 'Native American'), 
+               variable.name="Anc", value.name="Proportions")
+
+chrplot = ggplot(chrmelt, aes(Chromosome, Proportions, fill=Proportions)) + 
+  facet_wrap( ~ Anc ,nrow = 1) +
+  geom_bar(stat="identity") +
+  ylim(c(0,1)) +
+  coord_flip() +
+  scale_fill_distiller(palette = 'Spectral')+
+  guides(fill = FALSE) +
+  scale_x_reverse(breaks = c(1:22), expand = c(0,0)) +
+  theme(
+    panel.grid.minor.y = element_blank()
+  )
+
+
 t2dat = tdat %>% 
   slice(23:dim(tdat)[1])
+
+tsum = tdat %>%
+  summarise_all(mean)
 
 
 tdat = randsnpdat %>%
