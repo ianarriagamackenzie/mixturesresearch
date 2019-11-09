@@ -11,6 +11,8 @@ server = function(input, output) {
   
   bbranchrdat = reactiveValues(bbdat = NULL, randat = NULL, chrdat = NULL)
   
+  
+  
   observeEvent({
     input$ancdat
     input$exge}, {
