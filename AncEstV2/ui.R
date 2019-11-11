@@ -129,17 +129,17 @@ ui = fluidPage(
             condition = "input.bbranchr == 'bb' || input.bbranchr == 'randsnp' ",
             
             fluidRow(
-              
+              verbatimTextOutput('bbraninfo1')
             ),
             
             fluidRow(
-              
+              verbatimTextOutput('bbraninfo2')
             )
           ),
           
           conditionalPanel(
-            condition = "input.bbranchr == 'chr' "
-
+            condition = "input.bbranchr == 'chr' ",
+            tableOutput('chrinfo')
           )
           
         )

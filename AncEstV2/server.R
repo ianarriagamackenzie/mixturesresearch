@@ -132,11 +132,10 @@ server = function(input, output) {
     
   })
   
+  
   output$secondaryPlot = renderPlot({
     
     snpnum = 0
-    
-    plot_list = list()
     
     if (input$bbranchr == 'bb'){
       t2dat = bbranchrdat$bbdat %>% 
@@ -153,6 +152,8 @@ server = function(input, output) {
         filter(NumberSNPs == snpnum) %>% 
         select(AFR, EAS, EUR, NAM, SAS)
     }
+    
+    plot_list = list()
     
     anc_list = names(t2dat)
     
@@ -180,5 +181,95 @@ server = function(input, output) {
 )
     
   })
+  
+  output$bbraninfo1 = renderPrint({
+    
+    if (input$bbranchr == 'randsnp'){
+      
+      raninfo = bbranchrdat$randat
+      
+      if (input$exge == 'genome'){
+        snpnuminfo = input$randsnpnumge
+      }
+      else if (input$exge == 'exome'){
+        snpnuminfo = input$randsnpnumex
+      }
+      
+      rancinfo = raninfo %>% 
+        filter(NumberSNPs %in% snpnuminfo) %>% 
+        select(AFR, EAS, EUR, NAM, SAS)
+      names(rancinfo) = c('African', 'East Asian', 'European', 'Native American', 'South Asian')
+      
+      return(summary(rancinfo))
+      
+    }
+    
+    if (input$bbranchr == 'bb'){
+      
+      bbinfo = bbranchrdat$bbdat
+      
+      bbcinfo = bbinfo %>% 
+        select(AFR, EAS, EUR, NAM, SAS)
+      names(bbcinfo) = c('African', 'East Asian', 'European', 'Native American', 'South Asian')
+      
+      return(summary(bbcinfo))
+      
+    }
+    
+  })
+  
+  output$bbraninfo2 = renderPrint({
+    
+    if (input$bbranchr == 'randsnp'){
+      
+      raninfo2 = bbranchrdat$randat
+      
+      if (input$exge == 'genome'){
+        snpnuminfo = input$randsnpnumge
+      }
+      else if (input$exge == 'exome'){
+        snpnuminfo = input$randsnpnumex
+      }
+      
+      rancinfo2 = raninfo2 %>% 
+        filter(NumberSNPs %in% snpnuminfo) %>% 
+        select(Time, Iterations, MinValue)
+      names(rancinfo2) = c('Time', 'Iterations', 'Minimaztion Value')
+      
+      return(summary(rancinfo2))
+      
+    }
+    
+    if (input$bbranchr == 'bb'){
+      
+      bbinfo2 = bbranchrdat$bbdat
+      
+      bbcinfo2 = bbinfo2 %>% 
+        select(Time, Iterations, MinValue)
+      names(bbcinfo2) = c('Time', 'Iterations', 'Minimaztion Value')
+      
+      return(summary(bbcinfo2))
+      
+    }
+    
+  })
+  
+  output$chrinfo = renderTable(
+    
+    {chrdatinfo = bbranchrdat$chrdat
+    chrdatinfo$TestNum = NULL
+    chrdatinfo$Exge = NULL
+    chrdatinfo$Gnomadanc = NULL
+    chrminmaxinfo = input$chrval
+    chrdatinfo = chrdatinfo[chrminmaxinfo[1]:chrminmaxinfo[2],]
+    chrdatinfo$NumberSNPs = as.character(chrdatinfo$NumberSNPs)
+    names(chrdatinfo) = c('Chromosome', 'Number of SNPs', 'European', 'African', 'South Asian', 'East Asian', 'Native American',
+                          'Test Time (Seconds)', 'Algorithm Iterations', 'Function Value')
+    
+    return(chrdatinfo)},
+    
+    digits = 4
+    
+  )
   
 }
