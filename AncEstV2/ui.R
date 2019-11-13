@@ -2,10 +2,11 @@ library(shiny)
 
 ui = fluidPage(
   
-  titlePanel('GnomAD Ancestry Estimation', windowTitle = 'Mixtures Ancestry Estimation'),
+  titlePanel('GnomAD Ancestry Estimation', windowTitle = 'Hendricks Research Group'),
   
   textOutput('authorid1'),
   textOutput('authorid2'),
+  textOutput('authorid3'),
   
   sidebarLayout(
     

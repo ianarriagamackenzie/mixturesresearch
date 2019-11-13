@@ -3,10 +3,13 @@ library(shiny)
 server = function(input, output) {
   
   output$authorid1 = renderText({
-    'Mixtures Research Group'
+    'Hendricks Research Group'
   })
   output$authorid2 = renderText({
     'University of Colorado Denver'
+  })
+  output$authorid3 = renderText({
+    'Created and maintained by Ian Arriaga MacKenzie'
   })
   
   bbranchrdat = reactiveValues(bbdat = NULL, randat = NULL, chrdat = NULL)
