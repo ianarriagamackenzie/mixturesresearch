@@ -2,44 +2,58 @@ library(shiny)
 
 server = function(input, output) {
   
-  refdat = genome_tests_afr
-  randchrdat = reactiveValues(chr_dat = NULL, rand_dat = NULL)
-  
   output$authorid1 = renderText({
-  'Mixtures Research Group'
+    'Hendricks Research Group'
   })
   output$authorid2 = renderText({
-  'University of Colorado Denver'
+    'University of Colorado Denver'
   })
+  output$authorid3 = renderText({
+    'Created and maintained by Ian Arriaga MacKenzie'
+  })
+  
+  bbranchrdat = reactiveValues(bbdat = NULL, randat = NULL, chrdat = NULL)
+  
+  
   
   observeEvent({
     input$ancdat
     input$exge}, {
-      temprefdat = get(paste(input$exge,'_tests_',tolower(input$ancdat), sep = ''))
-      randchrdat$chr_dat = temprefdat[1:22,]
-      randchrdat$rand_dat = temprefdat[23:length(temprefdat$Type_of_test),]
+      
+      bbranchrdat$bbdat = bbdat %>% 
+        filter(Exge == paste(input$exge)) %>% 
+        filter(Gnomadanc == paste(tolower(input$ancdat)))
+      
+      tempdat = randsnpdat %>% 
+        filter(Exge == paste(input$exge)) %>% 
+        filter(Gnomadanc == paste(tolower(input$ancdat)))
+      
+      bbranchrdat$randat = tempdat %>% 
+        slice(23:dim(tempdat)[1])
+      
+      bbranchrdat$chrdat = tempdat %>% 
+        slice(1:22)
+      
     }
   )
   
   output$mainPlot = renderPlot({
     
-    if (input$chrrand == 'randsnp'){
+    if (input$bbranchr == 'randsnp'){
       
-      randdat = randchrdat$rand_dat
-      
+      snpnum = 0
       if (input$exge == 'genome'){
-        snpnum = input$randsnpnumge
+        snpnum = as.numeric(input$randsnpnumge)
       }
       else if (input$exge == 'exome'){
-        snpnum = input$randsnpnumex
+        snpnum = as.numeric(input$randsnpnumex)
       }
       
-      indices = which(randdat$Number_SNPs == snpnum)
+      tdat = bbranchrdat$randat %>%
+        filter(NumberSNPs == snpnum) %>%
+        select(AFR, EAS, EUR, NAM, SAS)
       
-      randcleandat = randdat[(indices[1]):tail(indices, n = 1),4:8]
-      names(randcleandat) = c('EUR', 'AFR', 'SAS', 'EAS', 'NAM')
-      
-      randmeltdat <- melt(randcleandat)
+      randmeltdat <- melt(tdat)
       names(randmeltdat) = c('Ancestry', 'Proportion')
       
       randplot = ggplot(randmeltdat, aes(x=Proportion, fill = Ancestry)) +
@@ -48,34 +62,59 @@ server = function(input, output) {
         scale_fill_manual(values = colvec)+
         guides(fill = FALSE)+
         scale_x_continuous(breaks = c(0,.25,.50,.75,1),
-                           limits = c(0,1)) +
+                           limits = c(-0.01,1)) +
         theme(axis.text.x = element_text(size=20),
               axis.title.x = element_text(size=20),
               axis.text.y = element_blank(),
               axis.title.y = element_blank(),
-              strip.text.y = element_text(size = 15),
+              strip.text.y = element_text(size = 18),
               axis.ticks = element_blank())
       
       return(randplot)
-      
+
     }
     
-    if (input$chrrand == 'chr'){
+    if (input$bbranchr == 'bb'){
+
+      tdat = bbranchrdat$bbdat %>%
+        select(AFR, EAS, EUR, NAM, SAS)
+
+      bbmeltdat <- melt(tdat)
+      names(bbmeltdat) = c('Ancestry', 'Proportion')
       
-      chrdat = randchrdat$chr_dat
-      chrdat$Type_of_test = c(1:22)
+      bbplot = ggplot(bbmeltdat, aes(x=Proportion, fill = Ancestry)) +
+        geom_histogram(bins = 400)+
+        facet_grid(Ancestry ~ .)+
+        scale_fill_manual(values = colvec)+
+        guides(fill = FALSE)+
+        scale_x_continuous(breaks = c(0,.25,.50,.75,1),
+                           limits = c(-0.01,1)) +
+        theme(axis.text.x = element_text(size=20),
+              axis.title.x = element_text(size=20),
+              axis.text.y = element_blank(),
+              axis.title.y = element_blank(),
+              strip.text.y = element_text(size = 18),
+              axis.ticks = element_blank())
       
-      chrdat1 = chrdat[,1]; chrdat2 = chrdat[,4:8]
-      chrdat = cbind(chrdat1, chrdat2)
-      names(chrdat) = c('Chromosome', 'European', 'African', 'South Asian', 'East Asian', 'Native American')
+      return(bbplot)
+
+    }
+    
+    if (input$bbranchr == 'chr'){
+      
+      tdat = bbranchrdat$chrdat %>%
+        select(TestType, AFR, EAS, EUR, NAM, SAS)
+      tdat$TestType = c(1:22)
+      
+      names(tdat) = c('Chromosome', 'AFR', 'EAS', 'EUR', 'NAM', 'SAS')
       
       chrminmax = input$chrval
       
-      chrdat = chrdat[chrminmax[1]:chrminmax[2],]
+      tdat = tdat[chrminmax[1]:chrminmax[2],]
       
-      chrmelt<- melt(chrdat, id="Chromosome", 
-                         measure=c('European', 'African', 'South Asian', 'East Asian', 'Native American'), 
-                         variable.name="Anc", value.name="Proportions")
+      chrmelt<- melt(tdat, id="Chromosome", 
+                     measure=c('AFR', 'EAS', 'EUR', 'NAM', 'SAS'), 
+                     variable.name="Anc", value.name="Proportions")
       
       chrplot = ggplot(chrmelt, aes(Chromosome, Proportions, fill=Proportions)) + 
         facet_wrap( ~ Anc ,nrow = 1) +
@@ -88,63 +127,147 @@ server = function(input, output) {
         theme(
           panel.grid.minor.y = element_blank()
         )
-  
+      
       
       return(chrplot)
+      
     }
     
   })
   
-  output$randinfo1 = renderPrint({
+  
+  output$secondaryPlot = renderPlot({
     
-    randdatinfo = randchrdat$rand_dat
+    snpnum = 0
     
-    if (input$exge == 'genome'){
-      snpnuminfo = input$randsnpnumge
+    if (input$bbranchr == 'bb'){
+      t2dat = bbranchrdat$bbdat %>% 
+        select(AFR, EAS, EUR, NAM, SAS)
     }
-    else if (input$exge == 'exome'){
-      snpnuminfo = input$randsnpnumex
+    else if (input$bbranchr == 'randsnp'){
+      if (input$exge == 'genome'){
+        snpnum = as.numeric(input$randsnpnumge)
+      }
+      else if (input$exge == 'exome'){
+        snpnum = as.numeric(input$randsnpnumex)
+      }
+      t2dat = bbranchrdat$randat %>% 
+        filter(NumberSNPs == snpnum) %>% 
+        select(AFR, EAS, EUR, NAM, SAS)
     }
     
-    indicesinfo = which(randdatinfo$Number_SNPs == snpnuminfo)
+    plot_list = list()
     
-    randcleandatinfo = randdatinfo[(indicesinfo[1]):tail(indicesinfo, n = 1),4:8]
-    names(randcleandatinfo) = c('European', 'African', 'South Asian', 'East Asian', 'Native American')
+    anc_list = names(t2dat)
     
-    return(summary(randcleandatinfo))
+    for (i in 1:5){
+      pl = ggplot(data = t2dat, aes_string(x = anc_list[[i]])) +
+        geom_histogram(aes(y = ..density..), color = 'black', fill = colvec[i], bins = 30) +
+        geom_density(fill = NA) +
+        geom_vline(data = t2dat, xintercept = quantile(t2dat[[anc_list[i]]], probs = 0.025), linetype ="longdash", size = .8) +
+        geom_vline(data = t2dat, xintercept = quantile(t2dat[[anc_list[i]]], probs = 0.975), linetype ="longdash", size = .8) +
+        theme_minimal() + 
+        labs(title = paste(anc_list[i]), x = NULL, y = NULL) +
+        scale_x_continuous(labels = percent_format(accuracy = .01), 
+                           breaks = c(quantile(t2dat[[anc_list[i]]], probs = 0.025), quantile(t2dat[[anc_list[i]]], probs = 0.975))) +
+        theme(plot.title = element_text(hjust = 0.5, size = 15),
+              axis.text.x = element_text(face="bold", size=15),
+              axis.text.y = element_blank())
+      plot_list[[i]] = pl
+    }
+    
+    return(grid.arrange(plot_list[[1]],
+                        plot_list[[2]],
+                        plot_list[[3]],
+                        plot_list[[4]],
+                        plot_list[[5]], ncol = 5)
+)
     
   })
   
-  output$randinfo2 = renderPrint({
+  output$bbraninfo1 = renderPrint({
     
-    randdatinfo1 = randchrdat$rand_dat
-    
-    if (input$exge == 'genome'){
-      snpnuminfo1 = input$randsnpnumge
+    if (input$bbranchr == 'randsnp'){
+      
+      raninfo = bbranchrdat$randat
+      
+      if (input$exge == 'genome'){
+        snpnuminfo = input$randsnpnumge
+      }
+      else if (input$exge == 'exome'){
+        snpnuminfo = input$randsnpnumex
+      }
+      
+      rancinfo = raninfo %>% 
+        filter(NumberSNPs %in% snpnuminfo) %>% 
+        select(AFR, EAS, EUR, NAM, SAS)
+      names(rancinfo) = c('African', 'East Asian', 'European', 'Native American', 'South Asian')
+      
+      return(summary(rancinfo))
+      
     }
-    else if (input$exge == 'exome'){
-      snpnuminfo1 = input$randsnpnumex
+    
+    if (input$bbranchr == 'bb'){
+      
+      bbinfo = bbranchrdat$bbdat
+      
+      bbcinfo = bbinfo %>% 
+        select(AFR, EAS, EUR, NAM, SAS)
+      names(bbcinfo) = c('African', 'East Asian', 'European', 'Native American', 'South Asian')
+      
+      return(summary(bbcinfo))
+      
     }
     
-    indicesinfo1 = which(randdatinfo1$Number_SNPs == snpnuminfo1)
+  })
+  
+  output$bbraninfo2 = renderPrint({
     
-    randcleandatinfo1 = randdatinfo1[(indicesinfo1[1]):tail(indicesinfo1, n = 1),9:11]
-    randcleandatinfo1$Test_time = as.numeric(randcleandatinfo1$Test_time)
-    names(randcleandatinfo1) = c('Test Time (Seconds)', 'Algorithm Iterations', 'Least Squares Error')
+    if (input$bbranchr == 'randsnp'){
+      
+      raninfo2 = bbranchrdat$randat
+      
+      if (input$exge == 'genome'){
+        snpnuminfo = input$randsnpnumge
+      }
+      else if (input$exge == 'exome'){
+        snpnuminfo = input$randsnpnumex
+      }
+      
+      rancinfo2 = raninfo2 %>% 
+        filter(NumberSNPs %in% snpnuminfo) %>% 
+        select(Time, Iterations, MinValue)
+      names(rancinfo2) = c('Time', 'Iterations', 'Minimaztion Value')
+      
+      return(summary(rancinfo2))
+      
+    }
     
-    return(summary(randcleandatinfo1))
+    if (input$bbranchr == 'bb'){
+      
+      bbinfo2 = bbranchrdat$bbdat
+      
+      bbcinfo2 = bbinfo2 %>% 
+        select(Time, Iterations, MinValue)
+      names(bbcinfo2) = c('Time', 'Iterations', 'Minimaztion Value')
+      
+      return(summary(bbcinfo2))
+      
+    }
     
   })
   
   output$chrinfo = renderTable(
     
-    {chrdatinfo = randchrdat$chr_dat
-    chrdatinfo$Test_Number = NULL
+    {chrdatinfo = bbranchrdat$chrdat
+    chrdatinfo$TestNum = NULL
+    chrdatinfo$Exge = NULL
+    chrdatinfo$Gnomadanc = NULL
     chrminmaxinfo = input$chrval
     chrdatinfo = chrdatinfo[chrminmaxinfo[1]:chrminmaxinfo[2],]
-    chrdatinfo$Number_SNPs = as.character(chrdatinfo$Number_SNPs)
+    chrdatinfo$NumberSNPs = as.character(chrdatinfo$NumberSNPs)
     names(chrdatinfo) = c('Chromosome', 'Number of SNPs', 'European', 'African', 'South Asian', 'East Asian', 'Native American',
-                          'Test Time (Seconds)', 'Algorithm Iterations', 'Least Squares Error')
+                          'Test Time (Seconds)', 'Algorithm Iterations', 'Function Value')
     
     return(chrdatinfo)},
     

@@ -1,66 +1,65 @@
 library(shiny)
 
 ui = fluidPage(
-
-  titlePanel('GnomAD Ancestry Estimation', windowTitle = 'Mixtures Ancestry Estimation'),
-
+  
+  titlePanel('GnomAD Ancestry Estimation', windowTitle = 'Hendricks Research Group'),
+  
   textOutput('authorid1'),
   textOutput('authorid2'),
-
+  textOutput('authorid3'),
+  
   sidebarLayout(
     
     sidebarPanel(
       
-      (wellPanel(
-        
-        helpText('Genome and exome specific ancestry estimation.
-                 Analysis of the (African), (American/Latino), and (Other) allele frequency data sets from gnomAD.'),
-        
-        radioGroupButtons(
-          inputId = 'exge',
-          label = NULL,
-          choiceNames = c('Genome', 'Exome'),
-          choiceValues = c('genome', 'exome'),
-          selected = 'genome',
-          justified = TRUE,
-          individual = TRUE
-        ),
+      wellPanel(
         
         pickerInput(
           inputId = 'ancdat',
           label = NULL, 
           choices = c('AFR', 'AMR', 'OTH'),
           choicesOpt = list(
-            subtext = c('African', 'American/Latino', 'Other')
+            subtext = c('African/African American', 'American/Latinx', 'Other')
           ),
-          selected = 'AFR',
-          options = list(
-            style = "btn-primary")
-        )
-        
-      )),
-      
-      (wellPanel(
-        
-        helpText('Analysis on sampling of SNPs taken across all chromosomes, or each chromosome individually.'),
-        
-        radioGroupButtons(
-          inputId = 'chrrand',
-          label = NULL,
-          choiceNames = c('Random Sample', 'By Chromosome'),
-          choiceValues = c('randsnp', 'chr'),
-          selected = 'randsnp',
-          justified = TRUE,
-          individual = TRUE
+          selected = 'AFR'
         ),
         
-        conditionalPanel(
-          condition = "input.chrrand == 'randsnp' ",
+        splitLayout(
           
-          helpText('Number of SNPs randomly sampled across all chromosomes. 
-                   Resampled and tested 1000 times for distribution plots. 
-                   Bin size = 0.25%'),
+          radioGroupButtons(
+            inputId = 'bbranchr',
+            label = NULL,
+            choiceNames = c('Block Bootstrap', 'Random Sample', 'Chromosome'),
+            choiceValues = c('bb', 'randsnp', 'chr'),
+            selected = 'bb',
+            direction = 'vertical',
+            justified = TRUE,
+            checkIcon = list(
+              yes = icon("ok", 
+                         lib = "glyphicon"))
+          ),
           
+          radioGroupButtons(
+            inputId = 'exge',
+            label = NULL,
+            choiceNames = c('Genome', 'Exome'),
+            choiceValues = c('genome', 'exome'),
+            selected = 'genome',
+            direction = 'vertical',
+            justified = TRUE,
+            checkIcon = list(
+              yes = icon("ok", 
+                         lib = "glyphicon"))
+          )
+          
+        )
+        
+      ),
+      
+      conditionalPanel(
+        condition = "input.bbranchr == 'randsnp' ",
+        
+        wellPanel(
           conditionalPanel(
             condition = "input.exge == 'genome' ",
             sliderTextInput(
@@ -85,14 +84,14 @@ ui = fluidPage(
               hide_min_max = TRUE
             )
           )
-          
-        ),
+        )
         
-        conditionalPanel(
-          condition = "input.chrrand == 'chr' ",
-          
-          helpText('Range of chromosomes, estimated across all SNPs present.'),
-          
+      ),
+      
+      conditionalPanel(
+        condition = "input.bbranchr == 'chr' ",
+        
+        wellPanel(
           sliderTextInput(
             inputId = 'chrval',
             label = NULL,
@@ -101,11 +100,9 @@ ui = fluidPage(
             grid = TRUE,
             hide_min_max = TRUE
           )
-          
         )
         
-        
-      ))
+      )
       
     ),
     
@@ -115,35 +112,43 @@ ui = fluidPage(
         
         tabPanel(
           'Plots',
-          plotOutput('mainPlot')
+          plotOutput('mainPlot', height = 400),
+          
+          conditionalPanel(
+            condition = "input.bbranchr == 'bb' || input.bbranchr == 'randsnp' ",
+            
+            wellPanel(
+              plotOutput('secondaryPlot', height = 200)
+            )
+          )
         ),
         
         tabPanel(
           'Numeric Summaries',
           
           conditionalPanel(
-            condition = "input.chrrand == 'randsnp' ",
+            condition = "input.bbranchr == 'bb' || input.bbranchr == 'randsnp' ",
             
             fluidRow(
-              verbatimTextOutput('randinfo1')
+              verbatimTextOutput('bbraninfo1')
             ),
             
             fluidRow(
-              verbatimTextOutput('randinfo2')
+              verbatimTextOutput('bbraninfo2')
             )
           ),
           
           conditionalPanel(
-            condition = "input.chrrand == 'chr' ",
+            condition = "input.bbranchr == 'chr' ",
             tableOutput('chrinfo')
           )
           
         )
         
       )
-      
-    )
     
   )
   
+)
+
 )

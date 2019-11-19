@@ -5,8 +5,8 @@ account: ianarrmack
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1079150
-bundleId: 2312225
+bundleId: 2590962
 url: https://ianarrmack.shinyapps.io/AncestryEstimation-App/
-when: 1565625160.24224
+when: 1573793589.35777
 asMultiple: FALSE
 asStatic: FALSE
