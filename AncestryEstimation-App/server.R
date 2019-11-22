@@ -8,12 +8,8 @@ server = function(input, output) {
   output$authorid2 = renderText({
     'University of Colorado Denver'
   })
-  output$authorid3 = renderText({
-    'Created and maintained by Ian Arriaga MacKenzie'
-  })
   
   bbranchrdat = reactiveValues(bbdat = NULL, randat = NULL, chrdat = NULL)
-  
   
   
   observeEvent({
@@ -36,6 +32,11 @@ server = function(input, output) {
       
     }
   )
+  
+  Waitress$new(
+    "mainPlot",
+    theme = 'overlay-percent'
+    )$auto(20, 2000)
   
   output$mainPlot = renderPlot({
     
@@ -144,7 +145,8 @@ server = function(input, output) {
       t2dat = bbranchrdat$bbdat %>% 
         select(AFR, EAS, EUR, NAM, SAS)
     }
-    else if (input$bbranchr == 'randsnp'){
+    
+    if (input$bbranchr == 'randsnp'){
       if (input$exge == 'genome'){
         snpnum = as.numeric(input$randsnpnumge)
       }
@@ -274,5 +276,6 @@ server = function(input, output) {
     digits = 4
     
   )
+  
   
 }

@@ -2,15 +2,18 @@ library(shiny)
 
 ui = fluidPage(
   
+  use_waitress('red'),
+  
   titlePanel('GnomAD Ancestry Estimation', windowTitle = 'Hendricks Research Group'),
   
   textOutput('authorid1'),
   textOutput('authorid2'),
-  textOutput('authorid3'),
   
   sidebarLayout(
     
     sidebarPanel(
+      
+      width = 4,
       
       wellPanel(
         
@@ -108,10 +111,13 @@ ui = fluidPage(
     
     mainPanel(
       
+      width = 8,
+      
       tabsetPanel(
         
         tabPanel(
           'Plots',
+          
           plotOutput('mainPlot', height = 400),
           
           conditionalPanel(

@@ -10,6 +10,7 @@ library(RColorBrewer)
 library(scales)
 library(gridExtra)
 library(dplyr)
+library(waiter)
 
 colvec = c(brewer.pal(n = 8, name = 'Set2')[3],
            brewer.pal(n = 8, name = 'Set2')[1],
