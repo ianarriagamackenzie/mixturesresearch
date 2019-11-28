@@ -33,11 +33,6 @@ server = function(input, output) {
     }
   )
   
-  Waitress$new(
-    "mainPlot",
-    theme = 'overlay-percent'
-    )$auto(20, 2000)
-  
   output$mainPlot = renderPlot({
     
     if (input$bbranchr == 'randsnp'){

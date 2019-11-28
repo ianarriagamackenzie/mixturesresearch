@@ -25,4 +25,3 @@ bbdat = read.csv('bbdat.txt', sep='')
 # load data from laptop for testing purposes, comment out on published app
 # randsnpdat = read.csv('~/GitHub/mixturesresearch/AncEstV2/randsnpdat.txt', sep='')
 # bbdat = read.csv('~/GitHub/mixturesresearch/AncEstV2/bbdat.txt', sep='')
-
