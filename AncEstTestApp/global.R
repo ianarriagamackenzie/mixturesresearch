@@ -15,11 +15,11 @@ library(dplyr)
 library(shinycssloaders)
 library(skimr)
 
-colvec = c(brewer.pal(n = 6, name = 'Set2')[3],
-           brewer.pal(n = 6, name = 'Set2')[1],
-           brewer.pal(n = 6, name = 'Set2')[2],
-           brewer.pal(n = 6, name = 'Set2')[6],
-           brewer.pal(n = 6, name = 'Set2')[5])
+colvec = c(brewer.pal(n = 8, name = 'Set2')[3],
+           brewer.pal(n = 8, name = 'Set2')[1],
+           brewer.pal(n = 8, name = 'Set2')[2],
+           brewer.pal(n = 8, name = 'Set2')[6],
+           brewer.pal(n = 8, name = 'Set2')[5])
 
 # load genome/exome test data
 dat = read.csv('findat.txt', sep='')
@@ -62,12 +62,15 @@ distplot = function(dataset){
     pl = ggplot(data = datasetc, aes_string(x = anc_list[[i]])) +
       geom_histogram(aes(y = ..density..), color = 'black', fill = colvec[i], bins = 30) +
       geom_density(fill = NA) +
-      geom_vline(data = dataset, xintercept = quantile(datasetc[[anc_list[i]]], probs = 0.025), linetype ="longdash", size = .8) +
-      geom_vline(data = dataset, xintercept = quantile(datasetc[[anc_list[i]]], probs = 0.975), linetype ="longdash", size = .8) +
+      geom_vline(data = dataset, xintercept = quantile(datasetc[[anc_list[i]]], probs = 0.025),
+                 linetype ="longdash", size = .8) +
+      geom_vline(data = dataset, xintercept = quantile(datasetc[[anc_list[i]]], probs = 0.975),
+                 linetype ="longdash", size = .8) +
       theme_minimal() + 
       labs(title = paste(anc_list[i]), x = NULL, y = NULL) +
       scale_x_continuous(labels = percent_format(accuracy = .01), 
-                         breaks = c(quantile(datasetc[[anc_list[i]]], probs = 0.025), quantile(datasetc[[anc_list[i]]], probs = 0.975))) +
+                         breaks = c(quantile(datasetc[[anc_list[i]]], probs = 0.025),
+                                    quantile(datasetc[[anc_list[i]]], probs = 0.975))) +
       theme(plot.title = element_text(hjust = 0.5, size = 15),
             axis.text.x = element_text(face="bold", size=15),
             axis.text.y = element_blank())

@@ -5,8 +5,8 @@ account: ianarrmack
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1514723
-bundleId: 2611005
+bundleId: 2627865
 url: https://ianarrmack.shinyapps.io/AncEstTestApp/
-when: 1574465922.14214
+when: 1575096817.66497
 asMultiple: FALSE
 asStatic: FALSE

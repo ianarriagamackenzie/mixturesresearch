@@ -69,8 +69,10 @@ ui = dashboardPage(
                 column(
                   width = 3,
                   box(
-                    title = "bb Info", width = NULL, status = "primary", height = 260,
-                    "bb Info"
+                    title = "Block Bootstrapping", width = NULL, status = "primary",
+                    'We use block bootstrapping to estimate error in our method.  We partition our data into 3357 one centiMorgan blocks 
+                    and resample with replacement before estimating ancestry proportions.  We replicate this 1000 times for the plots 
+                    and CIs shown here.'
                   )
                 ),
                 
@@ -123,13 +125,14 @@ ui = dashboardPage(
                 column(
                   width = 3,
                   box(
-                    title = "ran Info", width = NULL, status = "primary", height = 260,
-                    "ran Info"
+                    title = "Random SNP Sample", width = NULL, status = "primary",
+                    'We sample N random SNPs across all 22 chromosomes and evaluate ancestry proportions using our 
+                    method.  We replicate the random sample 1000 times for the plots and CIs shown.  Here N can be varied 
+                    to evaluate our method with difference numbers of SNPs sampled.'
                   ),
                   
                   box(
-                    title = 'N Random SNPs', width = NULL,
-                    status = "primary", height = 140,
+                    title = 'N Random SNPs', width = NULL, status = "primary",
                     
                     conditionalPanel(
                       condition = "input.exge == 'genome' ",
@@ -208,8 +211,9 @@ ui = dashboardPage(
                 column(
                   width = 3,
                   box(
-                    title = "chr Info", width = NULL, status = "primary", height = 240,
-                    "Info"
+                    title = "Chromosome", width = NULL, status = "primary",
+                    'We partition our data by chromosome and evaluate ancestry proportions using our method.  Because our method 
+                    is deterministic, we only estimate ancestry on each chromosome once.'
                   )
                 ),
                 
@@ -241,7 +245,80 @@ ui = dashboardPage(
       ),
       
       tabItem(tabName = "readme",
-              h2("Readme")
+              fluidRow(
+                
+                column(
+                  width = 8,
+                  box(
+                    title = "ReadMe", width = NULL, status = "primary", height = 380,
+                    'This data was aggregated from the publically available genetic databases: ',
+                    a('1000 Genomes Project', href = "https://www.internationalgenome.org/"),
+                    'and', 
+                    a('Genome Aggregation Database', href = 'https://gnomad.broadinstitute.org/'), '.',
+                    br(),
+                    br(),
+                    'Our reference dataset was created from 1000 Genomes Project and an allele frequency dataset for Native Americans 
+                    provided by Dr. Chris Gignoux.  This reference panel was merged by rsID, reference and alternate alleles. 
+                    Tri-allelic SNPs and SNPs with incomplete information were removed, leaving ~600,000 SNPs across all 22 
+                    chromosomes in our reference panel.',
+                    br(),
+                    br(),
+                    'Our tested dataset was created from the gnomAD database.  This AF data was matched to our reference dataset 
+                    by rsID, reference and alternate alleles.  We had ~580,000 SNPs across all 22 chromosomes to evaluate using our method 
+                    after cleaning and matching the data.',
+                    br(),
+                    br(),
+                    'We estimate the ancestry proportions within gnomAD ancestry groups by using our algorithm in block bootstrapping, 
+                    by chromosome, and a random SNP sample.  The results of our findings are displayed in various tabs in this Shiny app.'
+                  )
+                ),
+                
+                column(
+                  width = 4,
+                  box(
+                    title = "Acknowledgements", width = NULL, status = "primary", height = 380,
+                    
+                    strong("This work was a collaborative effort by:"),
+                    br(), 
+                    "Ian S. Arriaga-Mackenzie, Gregory M. Matesi, Alexandria Ronco, Ryan Scherenberg, 
+                    Andrew Zerwick, Yinfei Wu, James Vance, Jordan R. Hall, Christopher R. Gignoux, 
+                    Megan Null, Audrey E. Hendricks",
+                    br(),
+                    strong("Additional Funding from:"),
+                    br(),
+                    "CU Denver Undergraduate Research Opportunity Program (UROP) and 
+                    Education through Undergraduate Research and Creative Activities (EUReCA) program",
+                    br(),
+                    strong('Shiny App created and maintained by:'),
+                    br(),
+                    'Ian S. Arriaga MacKenzie'
+                  )
+                )
+                
+              ),
+              
+              fluidRow(
+                
+                column(
+                  width = 8,
+                  box(
+                    title = "Disclaimer", width = NULL, status = "primary", height = 300,
+                    
+                    'Under no circumstances shall authors of this website and ancestry estimation algorithm be liable for 
+                    any indirect, incidental, consequential, special or exemplary damages arising out of or in connection
+                    with your access or use of or inability to access the ancestry estimation website or any associated software 
+                    and tools and any third party content and services, whether or not the damages were foreseeable and whether or 
+                    not the authors were advised of the possibility of such damages.  By using the ancestry estimation platform 
+                    you agree to use it to promote scientific research, learning or health.'
+                  )
+                ),
+                
+                column(
+                  width = 4,
+                  img(src='CUdenverlogo.png', align = "Center", height = 150, width = 240)
+                )
+                
+              )
       )
       
     )

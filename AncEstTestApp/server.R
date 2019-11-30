@@ -41,7 +41,7 @@ server = function(input, output, session) {
     bbranchrdat$bbdat %>% 
       bbraninfo()
     
-  }, digits = 4, align = 'c')
+  }, digits = 5, align = 'c')
   
   output$plotran = renderPlot({
     snpnum = 0
@@ -86,7 +86,7 @@ server = function(input, output, session) {
       filter(NumberSNPs == snpnum) %>% 
       bbraninfo()
     
-  }, digits = 4, align = 'c')
+  }, digits = 5, align = 'c')
   
   output$plotchr = renderPlot({
     
@@ -103,6 +103,6 @@ server = function(input, output, session) {
     
     return(sumchrdat)
     
-  }, digits = 4, spacing = 'xs', align = 'c')
+  }, digits = 5, spacing = 'xs', align = 'c')
   
 }
