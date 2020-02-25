@@ -99,7 +99,7 @@ server = function(input, output, session) {
     
     sumchrdat = bbranchrdat$chrdat %>% 
       select(TestType, AFR, EAS, EUR, NAM, SAS)
-    names(sumchrdat) = c('Chromosome', 'AFR', 'EAS', 'EUR', 'NAM', "SAS")
+    names(sumchrdat) = c('Chromosome', 'AFR', 'EAS', 'EUR', 'IAM', "SAS")
     
     return(sumchrdat)
     

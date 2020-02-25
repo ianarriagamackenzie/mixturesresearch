@@ -4,7 +4,7 @@ ui = dashboardPage(
   
   dashboardHeader(
     
-    title = 'Gnomad Ancestry Estimation',
+    title = 'gnomAD Ancestry Estimation',
     titleWidth = 300
     
     ),
@@ -47,18 +47,30 @@ ui = dashboardPage(
     
     sidebarMenu(
       id = 'menuselect',
-      menuItem("Block Bootstrap", tabName = "bb", icon = icon("chart-area"), selected = TRUE),
-      menuItem("Chromosome", tabName = "chr", icon = icon("chart-bar")),
-      menuItem("Random SNP Sample", tabName = 'ran', icon = icon("chart-area")),
-      menuItem("ReadMe", tabName = "readme", icon = icon("readme")),
-      menuItem("Github", icon = icon("code"),
-               href = "https://github.com/hendriau/Mixtures")
+      menuItem("Genome-wide Ancestry Proportions",
+               icon = icon("chart-area"),
+               startExpanded = TRUE,
+               menuSubItem("Block Bootstrap",
+                           tabName = "bb",
+                           selected = TRUE),
+               menuSubItem("Random SNP Sample",
+                           tabName = "ran")
+               ),
+      menuItem("Ancestry Proportions by Chromosome", tabName = "chr", icon = icon("chart-bar")),
+      menuItem("ReadMe", tabName = "readme", icon = icon("readme"))
+      # menuItem("Github", icon = icon("code"),
+      #          href = "https://github.com/hendriau/Mixtures",
+      #          newtab = TRUE)
       
     )
     
   ),
   
   dashboardBody(
+    
+    tags$head(
+      tags$style(HTML(".main-sidebar { font-size: 12px; }")) # change the font size to 12
+    ),
     
     tabItems(
 
@@ -70,9 +82,8 @@ ui = dashboardPage(
                   width = 3,
                   box(
                     title = "Block Bootstrapping", width = NULL, status = "primary",
-                    'We use block bootstrapping to estimate error in our method.  We partition our data into 3357 one centiMorgan blocks 
-                    and resample with replacement before estimating ancestry proportions.  We replicate this 1000 times for the plots 
-                    and CIs shown here.'
+                    'We use block bootstrapping to estimate error for the ancestry proportions. 
+                    We resample 3,357 centiMorgan blocks 1,000 times for the plots and confidence intervals shown here.'
                   )
                 ),
                 
@@ -126,9 +137,9 @@ ui = dashboardPage(
                   width = 3,
                   box(
                     title = "Random SNP Sample", width = NULL, status = "primary",
-                    'We sample N random SNPs across all 22 chromosomes and evaluate ancestry proportions using our 
-                    method.  We replicate the random sample 1000 times for the plots and CIs shown.  Here N can be varied 
-                    to evaluate our method with difference numbers of SNPs sampled.'
+                    'We sample N random SNPs across the 22 autosomes to estimate ancestry proportions. 
+                    We randomly sample 1,000 times for the plots and confidence intervals shown here. 
+                    N can be varied to evaluate our method with different numbers of SNPs.'
                   ),
                   
                   box(
@@ -212,8 +223,7 @@ ui = dashboardPage(
                   width = 3,
                   box(
                     title = "Chromosome", width = NULL, status = "primary",
-                    'We partition our data by chromosome and evaluate ancestry proportions using our method.  Because our method 
-                    is deterministic, we only estimate ancestry on each chromosome once.'
+                    'Estimated ancestry proportions by chromosome using all SNPs.'
                   )
                 ),
                 
@@ -250,33 +260,27 @@ ui = dashboardPage(
                 column(
                   width = 8,
                   box(
-                    title = "ReadMe", width = NULL, status = "primary", height = 380,
-                    'This data was aggregated from the publically available genetic databases: ',
-                    a('1000 Genomes Project', href = "https://www.internationalgenome.org/"),
-                    'and', 
-                    a('Genome Aggregation Database', href = 'https://gnomad.broadinstitute.org/'), '.',
+                    title = "ReadMe", width = NULL, status = "primary", height = 450,
+                    
+                    'Our reference panel was created from ',
+                    a('1000 Genomes Project', href = "https://www.internationalgenome.org/", target="_blank"),
+                    ' (GRCh37/hg19) superpopulations (African, Non-Finish European, East Asian, South Asian) and an ',
+                    a('Indigenous American population', href = "ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/working/20130711_native_american_admix_train", target="_blank"),
+                    ' (616,568 SNPs and 43 individuals, GRCh37/hg19). Tri-allelic SNPs and SNPs with missing 
+                    allele frequency information were removed, leaving 613,298 SNPs across the 22 autosomes.',
                     br(),
                     br(),
-                    'Our reference dataset was created from 1000 Genomes Project and an allele frequency dataset for Native Americans 
-                    provided by Dr. Chris Gignoux.  This reference panel was merged by rsID, reference and alternate alleles. 
-                    Tri-allelic SNPs and SNPs with incomplete information were removed, leaving ~600,000 SNPs across all 22 
-                    chromosomes in our reference panel.',
-                    br(),
-                    br(),
-                    'Our tested dataset was created from the gnomAD database.  This AF data was matched to our reference dataset 
-                    by rsID, reference and alternate alleles.  We had ~580,000 SNPs across all 22 chromosomes to evaluate using our method 
-                    after cleaning and matching the data.',
-                    br(),
-                    br(),
-                    'We estimate the ancestry proportions within gnomAD ancestry groups by using our algorithm in block bootstrapping, 
-                    by chromosome, and a random SNP sample.  The results of our findings are displayed in various tabs in this Shiny app.'
+                    'We estimate the ancestry proportions from ',
+                    a('gnomAD V2', href = 'https://gnomad.broadinstitute.org/', target="_blank"),
+                    '(GRCh37/hg19). After merging with our reference panel we checked for allele matching and strand flips. 
+                    Our final dataset had 582,550 genome SNPs and 9,835 exome SNPs across the 22 autosomes.'
                   )
                 ),
                 
                 column(
                   width = 4,
                   box(
-                    title = "Acknowledgements", width = NULL, status = "primary", height = 380,
+                    title = "Acknowledgements", width = NULL, status = "primary", height = 450,
                     
                     strong("This work was a collaborative effort by:"),
                     br(), 
@@ -286,12 +290,25 @@ ui = dashboardPage(
                     br(),
                     strong("Additional Funding from:"),
                     br(),
-                    "CU Denver Undergraduate Research Opportunity Program (UROP) and 
-                    Education through Undergraduate Research and Creative Activities (EUReCA) program",
+                    "CU Denver Undergraduate Research Opportunity Program (UROP)",
+                    br(),
+                    "Education through Undergraduate Research and Creative Activities (EUReCA) program",
                     br(),
                     strong('Shiny App created and maintained by:'),
                     br(),
-                    'Ian S. Arriaga MacKenzie'
+                    'Ian S. Arriaga MacKenzie',
+                    br(),
+                    a(actionButton(inputId = "email1", label = "email", 
+                                   icon = icon("envelope", lib = "font-awesome")),
+                      href="mailto:IAN.ARRIAGAMACKENZIE@ucdenver.edu"),
+                    br(),
+                    strong('Principle Investigator:'),
+                    br(),
+                    'Dr. Audrey E. Hendricks',
+                    br(),
+                    a(actionButton(inputId = "email2", label = "email", 
+                                   icon = icon("envelope", lib = "font-awesome")),
+                      href="mailto:AUDREY.HENDRICKS@ucdenver.edu")
                   )
                 )
                 
@@ -302,7 +319,7 @@ ui = dashboardPage(
                 column(
                   width = 8,
                   box(
-                    title = "Disclaimer", width = NULL, status = "primary", height = 300,
+                    title = "Disclaimer", width = NULL, status = "primary",
                     
                     'Under no circumstances shall authors of this website and ancestry estimation algorithm be liable for 
                     any indirect, incidental, consequential, special or exemplary damages arising out of or in connection

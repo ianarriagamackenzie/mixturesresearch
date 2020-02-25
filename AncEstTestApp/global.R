@@ -32,6 +32,7 @@ dat = read.csv('findat.txt', sep='')
 proportionplot = function(dataset){
   meltdat = dataset %>%
     select(AFR, EAS, EUR, NAM, SAS) %>% 
+    rename(IAM = NAM) %>% 
     melt()
   names(meltdat) = c('Ancestry', 'Proportion')
   
@@ -54,7 +55,8 @@ proportionplot = function(dataset){
 
 distplot = function(dataset){
   datasetc = dataset %>% 
-    select(AFR, EAS, EUR, NAM, SAS)
+    select(AFR, EAS, EUR, NAM, SAS) %>% 
+    rename(IAM = NAM)
   plot_list = list()
   anc_list = names(datasetc)
   
@@ -89,10 +91,10 @@ chrplot = function(dataset){
   chrdat = dataset %>%
     select(TestType, AFR, EAS, EUR, NAM, SAS)
   
-  names(chrdat) = c('Chromosome', 'AFR', 'EAS', 'EUR', 'NAM', 'SAS')
+  names(chrdat) = c('Chromosome', 'AFR', 'EAS', 'EUR', 'IAM', 'SAS')
   
   chrmelt<- melt(chrdat, id="Chromosome", 
-                 measure=c('AFR', 'EAS', 'EUR', 'NAM', 'SAS'), 
+                 measure=c('AFR', 'EAS', 'EUR', 'IAM', 'SAS'), 
                  variable.name="Anc", value.name="Proportions")
   
   chrplot = ggplot(chrmelt, aes(Chromosome, Proportions, fill=Proportions)) + 
@@ -115,6 +117,7 @@ bbraninfo = function(dataset){
   
   sdat = dataset %>% 
     select(AFR, EAS, EUR, NAM, SAS) %>% 
+    rename(IAM = NAM) %>% 
     skim() %>% 
     select(skim_variable, numeric.mean, numeric.sd, numeric.p0, 
            numeric.p25, numeric.p50, numeric.p75, numeric.p100)
