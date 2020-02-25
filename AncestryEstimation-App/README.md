@@ -1,0 +1,1 @@
+These are R scripts for a Shiny App which demonstrate estimates of proportions in continental ancestries for combinations of allele pairs at SNP sites.
