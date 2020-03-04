@@ -1,7 +1,10 @@
+# shiny server, ancestry mixtures research project
 server = function(input, output, session) {
   
+  # store correct data frames in reactive value
   bbranchrdat = reactiveValues(bbdat = NULL, randat = NULL, chrdat = NULL)
   
+  # updates reactive data frame when new gnomAD group or genome/exome is selected
   observeEvent({
     input$ancdat
     input$exge}, {
@@ -22,6 +25,7 @@ server = function(input, output, session) {
       
     })
   
+  # output block bootstrapping main proportion plot
   output$plotbb = renderPlot({
     
     bbranchrdat$bbdat %>% 
@@ -29,6 +33,7 @@ server = function(input, output, session) {
     
   })
   
+  # output block bootstrapping secondary distribution plot
   output$distbb = renderPlot({
     
     bbranchrdat$bbdat %>% 
@@ -36,6 +41,7 @@ server = function(input, output, session) {
     
   })
   
+  # output block bootstrapping numeric summary
   output$infobb = renderTable({
     
     bbranchrdat$bbdat %>% 
@@ -43,6 +49,7 @@ server = function(input, output, session) {
     
   }, digits = 5, align = 'c')
   
+  # output random snp sample main proportion plot
   output$plotran = renderPlot({
     snpnum = 0
     if (input$exge == 'genome'){
@@ -58,6 +65,7 @@ server = function(input, output, session) {
     
   })
   
+  # output random snp sample secondary distribution plot
   output$distran = renderPlot({
     snpnum = 0
     if (input$exge == 'genome'){
@@ -73,6 +81,7 @@ server = function(input, output, session) {
     
   })
   
+  # output random snp sample numeric summary
   output$inforan = renderTable({
     snpnum = 0
     if (input$exge == 'genome'){
@@ -88,6 +97,7 @@ server = function(input, output, session) {
     
   }, digits = 5, align = 'c')
   
+  # output chromosome main plot
   output$plotchr = renderPlot({
     
     bbranchrdat$chrdat %>% 
@@ -95,6 +105,7 @@ server = function(input, output, session) {
     
   })
   
+  # output chromosome numeric summary
   output$sumchr = renderTable({
     
     sumchrdat = bbranchrdat$chrdat %>% 

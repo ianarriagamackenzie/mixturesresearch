@@ -1,7 +1,9 @@
+# shiny ui, ancestry mixtures research project
 ui = dashboardPage(
   
   skin = 'blue',
   
+  # main header
   dashboardHeader(
     
     title = 'gnomAD Ancestry Estimation',
@@ -9,15 +11,18 @@ ui = dashboardPage(
     
   ),
   
+  # options for choices along side bar
   dashboardSidebar(
     width = 250,
     
+    # secondary header
     fluidRow(
       align = 'center',
       h4('Hendricks Research Group'),
       h4('University of Colorado Denver')
     ),
     
+    # user selection of the exome or genome
     radioGroupButtons(
       inputId = 'exge',
       label = NULL,
@@ -33,6 +38,7 @@ ui = dashboardPage(
                    lib = "glyphicon"))
     ),
     
+    # user selection of gnomAD group
     pickerInput(
       inputId = 'ancdat',
       label = 'Ancestry Group',
@@ -45,19 +51,31 @@ ui = dashboardPage(
         `live-search` = TRUE)
     ),
     
+    # main menu of different plots
     sidebarMenu(
       id = 'menuselect',
+      
       menuItem("Genome-wide Ancestry Proportions",
                icon = icon("chart-area"),
                startExpanded = TRUE,
+               
+               # Block Boostrap analysis
                menuSubItem("Block Bootstrap",
                            tabName = "bb",
                            selected = TRUE),
+               
+               # Random SNP sample analysis
                menuSubItem("Random SNP Sample",
                            tabName = "ran")
       ),
+      
+      # analysis by chromosome
       menuItem("Ancestry Proportions by Chromosome", tabName = "chr", icon = icon("chart-bar")),
+      
+      # readme with disclaimer, acknowledgements, general use information
       menuItem("ReadMe", tabName = "readme", icon = icon("readme"))
+      
+      # github link
       # menuItem("Github", icon = icon("code"),
       #          href = "https://github.com/hendriau/Mixtures",
       #          newtab = TRUE)
@@ -68,18 +86,22 @@ ui = dashboardPage(
   
   dashboardBody(
     
+    # change the font size to 12
     tags$head(
-      tags$style(HTML(".main-sidebar { font-size: 12px; }")) # change the font size to 12
+      tags$style(HTML(".main-sidebar { font-size: 12px; }"))
     ),
     
     tabItems(
       
+      # block bootstrapping page
       tabItem(tabName = "bb",
               
               fluidRow(
                 
                 column(
                   width = 3,
+                  
+                  # description of block bootstrapping
                   box(
                     title = "Block Bootstrapping", width = NULL, status = "primary",
                     'We use block bootstrapping to estimate error for the ancestry proportions. 
@@ -89,16 +111,21 @@ ui = dashboardPage(
                 
                 column(
                   width = 9,
+                  
+                  # main proportion plot panel
                   tabBox(
                     title = "Proportion Estimates for Block Bootstrapping",
                     width = NULL, height = 440, side = 'right', selected = 'Visual',
                     
+                    # numeric summary
                     tabPanel(
                       'Numeric',
                       withSpinner(tableOutput(
                         'infobb'
                       ))
                     ),
+                    
+                    # visual plots
                     tabPanel(
                       'Visual',
                       withSpinner(plotOutput(
@@ -116,6 +143,8 @@ ui = dashboardPage(
                 column(width = 1),
                 column(
                   width = 10,
+                  
+                  # distribution plot panel
                   box(
                     title = "Distribution Plots and 95% Confidence Intervals", width = NULL,
                     status = "primary", height = 240,
@@ -129,12 +158,15 @@ ui = dashboardPage(
               )
       ),
       
+      # random SNP sample page
       tabItem(tabName = "ran",
               
               fluidRow(
                 
                 column(
                   width = 3,
+                  
+                  # description of random SNP sample analysis
                   box(
                     title = "Random SNP Sample", width = NULL, status = "primary",
                     'We sample N random SNPs across the 22 autosomes to estimate ancestry proportions. 
@@ -142,9 +174,11 @@ ui = dashboardPage(
                     N can be varied to evaluate our method with different numbers of SNPs.'
                   ),
                   
+                  # panel to select number of SNPs randomly sampled
                   box(
                     title = 'N Random SNPs', width = NULL, status = "primary",
                     
+                    # genome number selection
                     conditionalPanel(
                       condition = "input.exge == 'genome' ",
                       sliderTextInput(
@@ -157,6 +191,7 @@ ui = dashboardPage(
                       )
                     ),
                     
+                    # exome number selection
                     conditionalPanel(
                       condition = "input.exge == 'exome' ",
                       sliderTextInput(
@@ -175,16 +210,20 @@ ui = dashboardPage(
                 column(
                   width = 9,
                   
+                  # main proportion plot panel
                   tabBox(
                     title = "Proportion Estimates for Random SNP Sample",
                     width = NULL, height = 440, side = 'right', selected = 'Visual',
                     
+                    # numeric summary
                     tabPanel(
                       'Numeric',
                       withSpinner(tableOutput(
                         'inforan'
                       ))
                     ),
+                    
+                    # visual plots
                     tabPanel(
                       'Visual',
                       withSpinner(plotOutput(
@@ -202,6 +241,8 @@ ui = dashboardPage(
                 column(width = 1),
                 column(
                   width = 10,
+                  
+                  # distribution plot panel
                   box(
                     title = "Distribution Plots and 95% Confidence Intervals", width = NULL,
                     status = "primary", height = 240,
@@ -215,12 +256,15 @@ ui = dashboardPage(
               )
   ),
   
+  # chromosome analysis page
   tabItem(tabName = "chr",
           
           fluidRow(
             
             column(
               width = 3,
+              
+              # chromosme analysis information panel
               box(
                 title = "Chromosome", width = NULL, status = "primary",
                 'Estimated ancestry proportions by chromosome using all SNPs.'
@@ -230,16 +274,20 @@ ui = dashboardPage(
             column(
               width = 9,
               
+              # main chromosome plot panel
               tabBox(
                 title = "Proportion Estimates by Chromosome",
                 width = NULL, height = 700, side = 'right', selected = 'Visual',
                 
+                # numeric summary
                 tabPanel(
                   'Numeric',
                   withSpinner(tableOutput(
                     'sumchr'
                   ))
                 ),
+                
+                # visual plot
                 tabPanel(
                   'Visual',
                   withSpinner(plotOutput(
@@ -254,11 +302,14 @@ ui = dashboardPage(
           
   ),
   
+  # readme page
   tabItem(tabName = "readme",
           fluidRow(
             
             column(
               width = 8,
+              
+              # main readme, describes data sets and overall process of project, general information
               box(
                 title = "ReadMe", width = NULL, status = "primary",
                 
@@ -282,6 +333,8 @@ ui = dashboardPage(
                 '(GRCh37/hg19). After merging with our reference panel we checked for allele matching and strand flips. 
                 Our final dataset had 582,550 genome SNPs and 9,835 exome SNPs across the 22 autosomes.'
               ),
+              
+              # disclaimer about use of method
               box(
                 title = "Disclaimer", width = NULL, status = "primary",
                 
@@ -296,6 +349,8 @@ ui = dashboardPage(
             
             column(
               width = 4,
+              
+              # acknowledgements and thank yous, contact information
               box(
                 title = "Acknowledgements", width = NULL, status = "primary",
                 
@@ -313,6 +368,7 @@ ui = dashboardPage(
                 "CU Denver Education through Undergraduate Research and Creative Activities program (EUReCA)",
                 br(),
                 br(),
+                # shiny app creater, Ian Arriaga MacKenzie, contact information
                 strong('Shiny App'),
                 br(),
                 'Ian S. Arriaga MacKenzie',
@@ -322,6 +378,7 @@ ui = dashboardPage(
                   href="mailto:IAN.ARRIAGAMACKENZIE@ucdenver.edu"),
                 br(),
                 br(),
+                # PI for project, Dr. Audrey Hendricks, contact information
                 strong('Principal Investigator'),
                 br(),
                 'Dr. Audrey E. Hendricks',
@@ -330,6 +387,8 @@ ui = dashboardPage(
                                icon = icon("envelope", lib = "font-awesome")),
                   href="mailto:AUDREY.HENDRICKS@ucdenver.edu")
               ),
+              
+              # CU Denver logo
               img(src='CUdenverlogo.png', align = "Center", height = 150, width = 250)
             )
             

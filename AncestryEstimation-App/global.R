@@ -15,6 +15,7 @@ library(dplyr)
 library(shinycssloaders)
 library(skimr)
 
+# sets the colors used for the 5 ancestries, consistent coloring across different plots
 colvec = c(brewer.pal(n = 8, name = 'Set2')[3],
            brewer.pal(n = 8, name = 'Set2')[1],
            brewer.pal(n = 8, name = 'Set2')[2],
@@ -29,13 +30,17 @@ dat = read.csv('findat.txt', sep='')
 
 # Functions
 
+# main proportion plot of ancestries for block bootstrap and random snp sample options
 proportionplot = function(dataset){
+  
+  # select correct columns, melt for plotting
   meltdat = dataset %>%
     select(AFR, EAS, EUR, NAM, SAS) %>% 
     rename(IAM = NAM) %>% 
     melt()
   names(meltdat) = c('Ancestry', 'Proportion')
   
+  # ggplot with options
   propplot = ggplot(meltdat, aes(x=Proportion, fill = Ancestry)) +
     geom_histogram(bins = 400)+
     facet_grid(Ancestry ~ .)+
@@ -53,13 +58,17 @@ proportionplot = function(dataset){
   return(propplot)
 }
 
+# secondary plot of individual ancestry distributions and 95% CIs, for block bootstrapping and random snp sample
 distplot = function(dataset){
+  
+  # select correct columns, set up return plot list
   datasetc = dataset %>% 
     select(AFR, EAS, EUR, NAM, SAS) %>% 
     rename(IAM = NAM)
   plot_list = list()
   anc_list = names(datasetc)
   
+  # ggplot with options, returns list of 5 ancestry plots
   for (i in 1:5){
     pl = ggplot(data = datasetc, aes_string(x = anc_list[[i]])) +
       geom_histogram(aes(y = ..density..), color = 'black', fill = colvec[i], bins = 30) +
@@ -79,6 +88,7 @@ distplot = function(dataset){
     plot_list[[i]] = pl
   }
   
+  # return using gridExtra library
   return(grid.arrange(plot_list[[1]],
                       plot_list[[2]],
                       plot_list[[3]],
@@ -86,17 +96,18 @@ distplot = function(dataset){
                       plot_list[[5]], ncol = 5))
 }
 
+# plotting ancestry proportions by chromosome
 chrplot = function(dataset){
   
+  # subset correct columns, name and melt them
   chrdat = dataset %>%
     select(TestType, AFR, EAS, EUR, NAM, SAS)
-  
   names(chrdat) = c('Chromosome', 'AFR', 'EAS', 'EUR', 'IAM', 'SAS')
-  
   chrmelt<- melt(chrdat, id="Chromosome", 
                  measure=c('AFR', 'EAS', 'EUR', 'IAM', 'SAS'), 
                  variable.name="Anc", value.name="Proportions")
   
+  # ggplot with options
   chrplot = ggplot(chrmelt, aes(Chromosome, Proportions, fill=Proportions)) + 
     facet_wrap( ~ Anc , nrow = 1) +
     geom_bar(stat="identity") +
@@ -112,9 +123,11 @@ chrplot = function(dataset){
   return(chrplot)
   
 }
-
+# numeric information plots for block bootstrapping and random snp sample
 bbraninfo = function(dataset){
   
+  # select and summarize correct columns, return
+  # mean, standard deviation, min, 25th percentile, median, 75th percentile, max
   sdat = dataset %>% 
     select(AFR, EAS, EUR, NAM, SAS) %>% 
     rename(IAM = NAM) %>% 
